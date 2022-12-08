@@ -1,13 +1,11 @@
 import express from "express";
-import pkg from "pg";
-
-const { Pool } = pkg;
-
+import { connectionDB } from "../database/db";
 
 const app = express();
+app.use(express.json())
 
-const connection = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+
+
+
 
 app.listen(port, () => console.log(`Está rodando na porta ${port}!`));
