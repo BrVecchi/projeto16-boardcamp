@@ -2,8 +2,8 @@ import { connectionDB } from "../database/db.js"
 
 export async function findAllCategories(req, res) {
     try {
-    const categories = await connectionDB.query("SELECT * FROM categories;")
-        res.status(200).send(categories.rows)
+    const categories = (await connectionDB.query("SELECT * FROM categories;")).rows
+        res.status(200).send(categories)
     } catch (error) {
         res.sendStatus(error.message)
     }
@@ -18,7 +18,7 @@ export async function createCategory(req, res) {
     }
 
     try {
-        const categories = await connectionDB.query("SELECT * FROM categories;")
+        const categories = (await connectionDB.query("SELECT * FROM categories;")).rows
 
         categories.forEach(category => {
             if(category.name === name) {
@@ -29,7 +29,6 @@ export async function createCategory(req, res) {
 
         await connectionDB.query("INSERT INTO categories (name) VALUES ($1);", [name])
         res.sendStatus(201)
-        res.status(200).send(categories)
     } catch (error) {
         res.sendStatus(error.message)
     }
