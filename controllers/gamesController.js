@@ -2,7 +2,7 @@ import { connectionDB } from "../database/db.js"
 
 export async function findAllGames(req, res) {
     try {
-    const games = (await connectionDB.query("SELECT * FROM games;")).rows
+    const games = (await connectionDB.query(`SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON games."categoryId"=categories.id;`)).rows
         res.status(200).send(games)
     } catch (error) {
         res.sendStatus(error.message)
@@ -25,7 +25,6 @@ export async function createGame(req, res) {
     try {
         const categories = (await connectionDB.query("SELECT * FROM categories;")).rows
         const categoriesId = categories.map(category => category.id)
-        console.log(categoriesId)
         if (!categoriesId.includes(categoryId)){
             res.sendStatus(400)
             return
