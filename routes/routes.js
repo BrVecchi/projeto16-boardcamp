@@ -2,11 +2,12 @@ import { Router } from "express";
 import { findAllCategories, createCategory } from "../controllers/categoriesController.js";
 import { createCustomer, findAllCustomers, findCustmerById, updateCustomer } from "../controllers/customersController.js";
 import { createGame, findAllGames } from "../controllers/gamesController.js";
-import { findAllRentals } from "../controllers/rentalsController.js";
+import { createRental, findAllRentals } from "../controllers/rentalsController.js";
 
 const router = Router();
 // RENTALS
 router.get("/rentals", findAllRentals);
+router.post("/rentals", createRental);
 
 //GAMES
 router.get("/games", findAllGames);
