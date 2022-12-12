@@ -1,13 +1,29 @@
 import { connectionDB } from "../database/db.js"
 
 export async function findAllRentals(req, res) {
+    const rentalCustomerId = req.query.customerId
+    const rentalGameId = req.query.gameId
+    let where = ""
+    let value = null
+
+    if(rentalCustomerId) {
+        where = ' WHERE "customerId" = $1'
+        value = rentalCustomerId
+    }
+
+    if(rentalGameId) {
+        where = ' WHERE "gameId" = $1'
+        value = rentalGameId
+    }
+
     try {
     const rentals = await connectionDB.query(`
     SELECT rentals.*, games.name AS "gameName", games."categoryId" AS "gameCategoryId", categories.name AS "gameCategoryName",  customers.id, customers.name AS "customerName"  FROM rentals 
     JOIN games ON rentals."gameId" = games.id
     JOIN customers ON rentals."customerId" = customers.id
     JOIN categories ON games."categoryId" = categories.id
-    ;`)
+    ${where}
+    ;`, [value])
     const result = rentals.rows.map(rental => {
         return (
             {
