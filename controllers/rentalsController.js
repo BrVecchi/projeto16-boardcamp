@@ -76,3 +76,26 @@ export async function createRental(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function deleteRental(req, res) {
+  const {id} = req.params;
+  try {
+    const existId = (await connectionDB.query("SELECT * FROM rentals WHERE id=$1;", [id])).rows
+    if (!existId.length) {
+      res.sendStatus(404)
+      return
+    }
+    const isFinished = (await connectionDB.query(`SELECT "returnDate" FROM rentals WHERE id=$1;`, [id])).rows
+    console.log(isFinished.returnDate)
+    if (!isFinished.returnDate) {
+      res.status(400).send("Este aluguel não foi finalizado!")
+      return
+    }
+    
+    await connectionDB.query(`DELETE FROM rentals WHERE id=$1;`, [id])
+    res.sendStatus(200)
+  } catch (error) {
+    console.log(error.message);
+    res.sendStatus(500)
+  }
+}
