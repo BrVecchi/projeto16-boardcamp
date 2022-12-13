@@ -5,7 +5,8 @@ export async function findAllCustomers(req, res) {
     const customers = (await connectionDB.query("SELECT * FROM customers;")).rows
         res.status(200).send(customers)
     } catch (error) {
-        res.sendStatus(error.message)
+        res.status(500).send(error.message)
+
     }
 }
 
@@ -18,7 +19,8 @@ export async function findCustmerById(req, res) {
     }
     res.status(200).send(customer)
     } catch (error) {
-        res.sendStatus(error.message)
+        res.status(500).send(error.message)
+
     }
 }
 
@@ -36,7 +38,7 @@ export async function createCustomer(req, res) {
         await connectionDB.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);', [name, phone, cpf, birthday])
         res.sendStatus(201)
     } catch (error) {
-        res.sendStatus(error.message)
+        res.status(500).send(error.message)
     }
 }
 
@@ -48,7 +50,7 @@ export async function updateCustomer(req, res) {
         await connectionDB.query("UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5", [name, phone, cpf, birthday, id])
         res.sendStatus(200)
     } catch (error) {
-        res.sendStatus(error.message)
+        res.status(500).send(error.message)
     }
 }
 

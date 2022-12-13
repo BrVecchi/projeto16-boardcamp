@@ -1,14 +1,28 @@
 import { Router } from "express";
-import { findAllCategories, createCategory } from "../controllers/categoriesController.js";
-import { createCustomer, findAllCustomers, findCustmerById, updateCustomer } from "../controllers/customersController.js";
+import {
+  findAllCategories,
+  createCategory,
+} from "../controllers/categoriesController.js";
+import {
+  createCustomer,
+  findAllCustomers,
+  findCustmerById,
+  updateCustomer,
+} from "../controllers/customersController.js";
 import { createGame, findAllGames } from "../controllers/gamesController.js";
-import { createRental, findAllRentals, deleteRental } from "../controllers/rentalsController.js";
+import {
+  createRental,
+  findAllRentals,
+  deleteRental,
+  finishRental,
+} from "../controllers/rentalsController.js";
 
 const router = Router();
 // RENTALS
 router.get("/rentals", findAllRentals);
 router.post("/rentals", createRental);
-router.delete("/rentals/:id", deleteRental)
+router.delete("/rentals/:id", deleteRental);
+router.post("/rentals/:id/return", finishRental);
 
 //GAMES
 router.get("/games", findAllGames);
