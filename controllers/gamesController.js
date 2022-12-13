@@ -1,10 +1,18 @@
 import { connectionDB } from "../database/db.js";
 
 export async function findAllGames(req, res) {
+  const { name } = req.query;
+  let where = "";
+
+  if (name) {
+    where = ` WHERE LOWER (games.name) LIKE '%${name.toLowerCase()}%'`;
+  }
+
   try {
     const games = (
       await connectionDB.query(
-        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON games."categoryId"=categories.id;`
+        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON games."categoryId"=categories.id
+        ${where};`
       )
     ).rows;
     res.status(200).send(games);
@@ -32,6 +40,14 @@ export async function createGame(req, res) {
     const categoriesId = categories.map((category) => category.id);
     if (!categoriesId.includes(categoryId)) {
       res.sendStatus(400);
+      return;
+    }
+
+    const gameName = (
+      await connectionDB.query("SELECT * FROM games WHERE name = $1;", [name])
+    ).rows;
+    if (gameName) {
+      res.sendStatus(409);
       return;
     }
 

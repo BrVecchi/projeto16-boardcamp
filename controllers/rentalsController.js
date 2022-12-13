@@ -58,21 +58,56 @@ export async function findAllRentals(req, res) {
 export async function createRental(req, res) {
   const { customerId, gameId, daysRented } = req.body;
   const rentDate = new Date();
+  if (daysRented <= 0) {
+    res.sendStatus(400);
+    return;
+  }
   try {
+    const existCustomerId = (
+      await connectionDB.query(`SELECT * FROM customers WHERE id=$1;`, [
+        customerId,
+      ])
+    ).rows;
+    if (!existCustomerId) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const existGameId = (
+      await connectionDB.query(`SELECT * FROM games WHERE id=$1;`, [gameId])
+    ).rows;
+    if (!existGameId) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const gamesInStock = (
+      await connectionDB.query(`SELECT * FROM games WHERE id=$1;`, [gameId])
+    ).rows[0].stockTotal;
+    const gamesLeased = (
+      await connectionDB.query(`SELECT * FROM rentals WHERE "gameId"=$1;`, [
+        gameId,
+      ])
+    ).rows.length;
+    if (gamesInStock - gamesLeased === 0) {
+      res.sendStatus(400);
+      return;
+    }
+
     const originalPrice =
-      (await (
+      (
         await connectionDB.query(
           'SELECT "pricePerDay" FROM games WHERE id=$1;',
           [gameId]
         )
-      ).rows[0].pricePerDay) * daysRented;
+      ).rows[0].pricePerDay * daysRented;
     await connectionDB.query(
       'INSERT INTO rentals ("customerId", "gameId", "daysRented", "rentDate", "originalPrice") VALUES ($1, $2, $3, $4, $5);',
       [customerId, gameId, daysRented, rentDate, originalPrice]
     );
     res.sendStatus(201);
   } catch (error) {
-    res.status(500).send(error.message)
+    res.status(500).send(error.message);
   }
 }
 
@@ -100,7 +135,7 @@ export async function deleteRental(req, res) {
     await connectionDB.query(`DELETE FROM rentals WHERE id=$1;`, [id]);
     res.sendStatus(200);
   } catch (error) {
-    res.status(500).send(error.message)
+    res.status(500).send(error.message);
   }
 }
 
@@ -151,6 +186,6 @@ export async function finishRental(req, res) {
     );
     res.sendStatus(200);
   } catch (error) {
-    res.status(500).send(error.message)
+    res.status(500).send(error.message);
   }
 }
