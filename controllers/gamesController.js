@@ -45,7 +45,7 @@ export async function createGame(req, res) {
 
     const gameName = (
       await connectionDB.query("SELECT * FROM games WHERE name = $1;", [name])
-    ).rows;
+    ).rows[0];
     if (gameName) {
       res.sendStatus(409);
       return;

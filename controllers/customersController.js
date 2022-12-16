@@ -41,7 +41,7 @@ export async function findCustmerById(req, res) {
 }
 
 export async function createCustomer(req, res) {
-  const { cpf } = req.body;
+  const { name, phone, cpf, birthday } = req.body;
   console.log(cpf)
 
   if (cpf.toString().length !== 11) {
